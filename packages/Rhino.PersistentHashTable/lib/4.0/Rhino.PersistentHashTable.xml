@@ -1,0 +1,158 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Rhino.PersistentHashTable</name>
+    </assembly>
+    <members>
+        <member name="M:Rhino.PersistentHashTable.HiLoVersionGenerator.GenerateNextHi">
+            <summary>
+            Only one thread may execute this at a given time.
+            Note that this forces a NEW session and transaction, and doesn't use the existing one.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Rhino.PersistentHashTable.HiLoVersionGenerator.GenerateNextVersion">
+            <summary>
+            The formula is: (Hi-1)*Capacity+(++Lo) 
+            Full details about it can be found here:
+            http://devlicio.us/blogs/tuna_toksoz/archive/2009/05/18/id-generation-for-db4o.aspx
+            </summary>
+        </member>
+        <member name="P:Rhino.PersistentHashTable.AddItemRequest.Key">
+            <summary>
+            Gets or sets the key of the list to add the data to.
+            </summary>
+            <value>The key.</value>
+        </member>
+        <member name="P:Rhino.PersistentHashTable.AddItemRequest.Data">
+            <summary>
+            Gets or sets the data to add to the list
+            </summary>
+            <value>The data.</value>
+        </member>
+        <member name="P:Rhino.PersistentHashTable.GetItemsRequest.Key">
+            <summary>
+            Gets or sets the key to use for the list to get.
+            </summary>
+            <value>The key.</value>
+        </member>
+        <member name="P:Rhino.PersistentHashTable.PutRequest.Key">
+            <summary>
+            Gets or sets the key to store this value at.
+            </summary>
+            <value>The key.</value>
+        </member>
+        <member name="P:Rhino.PersistentHashTable.PutRequest.ReplicationVersion">
+            <summary>
+            Gets or sets the replication version for this value.
+            </summary>
+            <value>The replication version.</value>
+        </member>
+        <member name="P:Rhino.PersistentHashTable.PutRequest.ParentVersions">
+            <summary>
+            Gets or sets the parent versions for this value
+            </summary>
+            <value>The parent versions.</value>
+        </member>
+        <member name="P:Rhino.PersistentHashTable.PutRequest.ExpiresAt">
+            <summary>
+            Gets or sets the time this value expires at.
+            </summary>
+            <value>The expires at.</value>
+        </member>
+        <member name="P:Rhino.PersistentHashTable.PutRequest.ReplicationTimeStamp">
+            <summary>
+            Gets or sets the replication time stamp.
+            </summary>
+            <value>The replication time stamp.</value>
+        </member>
+        <member name="P:Rhino.PersistentHashTable.PutRequest.Bytes">
+            <summary>
+            Gets or sets the data for this key value.
+            </summary>
+            <value>The bytes.</value>
+        </member>
+        <member name="P:Rhino.PersistentHashTable.PutRequest.OptimisticConcurrency">
+            <summary>
+            Gets or sets a value indicating whether we should use optimistic concurrency when 
+            setting this value.
+            </summary>
+            <value>
+            	<c>true</c> if [optimistic concurrency]; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Rhino.PersistentHashTable.PutRequest.IsReadOnly">
+            <summary>
+            Gets or sets a value whether this value should be treated as read only.
+            Read only values means that the <i>value</i> is read only, not that it is treated
+            as read only by the PHT. 
+            This means that no concurrency checks are made, and that it is safe to cache it in 
+            many places, as long as the expiration time isn't passed.
+            </summary>
+            <value>
+            	<c>true</c> if this value should be treated as read only; otherwise, <c>false</c>.
+            </value>
+        </member>
+        <member name="P:Rhino.PersistentHashTable.PutRequest.Tag">
+            <summary>
+            Tag is a user specified value that allow the user to perform efficent searchs 
+            on top of the Key/Value interface that we expose
+            </summary>
+        </member>
+        <member name="P:Rhino.PersistentHashTable.GetRequest.Key">
+            <summary>
+            Gets or sets the key to get the value from the PHT.
+            </summary>
+            <value>The key.</value>
+        </member>
+        <member name="P:Rhino.PersistentHashTable.GetRequest.SpecifiedVersion">
+            <summary>
+            Gets or sets the specified version for this value.
+            </summary>
+            <value>The specified version.</value>
+        </member>
+        <member name="P:Rhino.PersistentHashTable.PutResult.Version">
+            <summary>
+            Gets or sets the version of the newly created value.
+            </summary>
+            <value>The version.</value>
+        </member>
+        <member name="P:Rhino.PersistentHashTable.PutResult.ConflictExists">
+            <summary>
+            Gets or sets a value indicating whether a conflict was created when setting
+            this value.
+            </summary>
+            <value><c>true</c> if [conflict exists]; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="P:Rhino.PersistentHashTable.RemoveItemRequest.Key">
+            <summary>
+            Gets or sets the key of the list to remove.
+            </summary>
+            <value>The key.</value>
+        </member>
+        <member name="P:Rhino.PersistentHashTable.RemoveItemRequest.Id">
+            <summary>
+            Gets or sets the id for the item to remove.
+            </summary>
+            <value>The id.</value>
+        </member>
+        <member name="P:Rhino.PersistentHashTable.RemoveRequest.Key">
+            <summary>
+            Gets or sets the key.
+            </summary>
+            <value>The key.</value>
+        </member>
+        <member name="P:Rhino.PersistentHashTable.ValueVersion.InstanceId">
+            <summary>
+            Gets or sets the instance id for this version
+            </summary>
+            <value>The instance id.</value>
+        </member>
+        <member name="P:Rhino.PersistentHashTable.ValueVersion.Number">
+            <summary>
+            Gets or sets the number of this version.
+            </summary>
+            <value>The number.</value>
+        </member>
+    </members>
+</doc>

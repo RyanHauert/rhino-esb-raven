@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using Castle.Windsor;
 using Raven.Client;
-using Raven.Client.Client;
+using Raven.Client.Embedded;
 using Rhino.ServiceBus.Impl;
 using Rhino.ServiceBus.Internal;
 using Rhino.ServiceBus.MessageModules;
@@ -30,7 +30,7 @@ namespace Rhino.ServiceBus.Tests
                 Component.For<IDocumentStore>()
                     .Instance(StartupDb()),
                 Component.For<IMessageModule, IDocumentStoreProvider>()
-                .ImplementedBy<RavenStoreProviderMessageModule>(),
+                    .ImplementedBy<RavenStoreProviderMessageModule>(),
                 Component.For(typeof(ISagaPersister<>))
                     .ImplementedBy(typeof(RavenSagaPersister<>)),
                 Component.For<OrderProcessor>()
@@ -135,7 +135,7 @@ namespace Rhino.ServiceBus.Tests
         }
 
         [Fact]
-        public void Can_send_several_messaged_to_same_instance_of_saga_entity()
+        public void Can_send_several_messages_to_same_instance_of_saga_entity()
         {
             using (var bus = container.Resolve<IStartableServiceBus>())
             {

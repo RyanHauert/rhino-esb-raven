@@ -1,0 +1,360 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Rhino.ServiceBus</name>
+    </assembly>
+    <members>
+        <member name="T:Rhino.ServiceBus.Internal.IMessageConsumer">
+            <summary>
+            Used to make it easy to work with IOC containers
+            </summary>
+        </member>
+        <member name="M:Rhino.ServiceBus.Internal.IStartable.Start">
+            <summary>
+            Register all message modules, subscribe to all the interesting messages and
+            start the trasport. 
+            This call will return after starting the bus, and the bus itself will be executed on
+            a background thread.
+            </summary>
+        </member>
+        <member name="T:Rhino.ServiceBus.IStartableServiceBus">
+            <summary>
+            Provide a way to start and dispose of the bus
+            </summary>
+            <remarks>
+            It is expected that this will be used only in the application startup, by the 
+            initialization code. Consumer code bases should use <see cref="T:Rhino.ServiceBus.IServiceBus"/> and
+            not <see cref="T:Rhino.ServiceBus.IStartableServiceBus"/>.
+            </remarks>
+        </member>
+        <member name="T:Rhino.ServiceBus.IServiceBus">
+            <summary>
+            The service bus abstraction, allow to publish messages and subscribe
+            or unsubscribe to messages
+            </summary>
+        </member>
+        <member name="M:Rhino.ServiceBus.IServiceBus.Publish(System.Object[])">
+            <summary>
+            Publish a message to all subscribers.
+            If there are no subscribers, it will throw.
+            </summary>
+            <param name="messages"></param>
+        </member>
+        <member name="M:Rhino.ServiceBus.IServiceBus.Notify(System.Object[])">
+            <summary>
+            Publish a message to all subscribers.
+            If there are no subscribers, it ignore the message
+            </summary>
+            <param name="messages"></param>
+        </member>
+        <member name="M:Rhino.ServiceBus.IServiceBus.Reply(System.Object[])">
+            <summary>
+            Reply to the source of the current message
+            Will throw if not currently handling a message
+            </summary>
+            <param name="messages"></param>
+        </member>
+        <member name="M:Rhino.ServiceBus.IServiceBus.Send(Rhino.ServiceBus.Endpoint,System.Object[])">
+            <summary>
+            Send the message directly to the specified endpoint
+            </summary>
+        </member>
+        <member name="M:Rhino.ServiceBus.IServiceBus.Send(System.Object[])">
+            <summary>
+            Send the message directly to the default endpoint
+            for this type of message
+            </summary>
+        </member>
+        <member name="M:Rhino.ServiceBus.IServiceBus.ConsumeMessages(System.Object[])">
+            <summary>
+            Invoke consumers for the relevant messages managed by the current
+            service bus instance. This happens immediately and on the current thread.
+            Error actions will not be executed and the message consumers will not be retried
+            if an error happens.
+            </summary>
+        </member>
+        <member name="M:Rhino.ServiceBus.IServiceBus.AddInstanceSubscription(Rhino.ServiceBus.Internal.IMessageConsumer)">
+            <summary>
+            Create a weak reference subscription for all the registered consumers 
+            for this consumer instance
+            </summary>
+        </member>
+        <member name="M:Rhino.ServiceBus.IServiceBus.Subscribe``1">
+            <summary>
+            Subscribe this endpoint to the message type
+            </summary>
+            <typeparam name="T">Message type</typeparam>
+        </member>
+        <member name="M:Rhino.ServiceBus.IServiceBus.Subscribe(System.Type)">
+            <summary>
+            Subscribe this endpoint to the message type
+            </summary>
+        </member>
+        <member name="M:Rhino.ServiceBus.IServiceBus.Unsubscribe``1">
+            <summary>
+            Unsubscribe this endpoint from the message type
+            </summary>
+        </member>
+        <member name="M:Rhino.ServiceBus.IServiceBus.Unsubscribe(System.Type)">
+            <summary>
+            Unsubscribe this endpoint from the message type
+            </summary>
+        </member>
+        <member name="M:Rhino.ServiceBus.IServiceBus.DelaySend(Rhino.ServiceBus.Endpoint,System.DateTime,System.Object[])">
+            <summary>
+            Send the message with a built in delay in its processing
+            </summary>
+            <param name="endpoint">The endpoint.</param>
+            <param name="time">The time.</param>
+            <param name="msgs">The messages.</param>
+        </member>
+        <member name="M:Rhino.ServiceBus.IServiceBus.DelaySend(System.DateTime,System.Object[])">
+            <summary>
+            Send the message with a built in delay in its processing
+            </summary>
+            <param name="time">The time.</param>
+            <param name="msgs">The messages.</param>
+        </member>
+        <member name="E:Rhino.ServiceBus.IServiceBus.ReroutedEndpoint">
+            <summary>
+            Occurs when the bus has rerouted an endpoint
+            </summary>
+        </member>
+        <member name="P:Rhino.ServiceBus.IServiceBus.Endpoint">
+            <summary>
+            Get the endpoint of the bus
+            </summary>
+        </member>
+        <member name="P:Rhino.ServiceBus.IServiceBus.CurrentMessageInformation">
+            <summary>
+            Get information on the current message being handled by the service bus.
+            </summary>
+        </member>
+        <member name="M:Rhino.ServiceBus.Impl.DefaultServiceBus.DelaySend(Rhino.ServiceBus.Endpoint,System.DateTime,System.Object[])">
+            <summary>
+            Send the message with a built in delay in its processing
+            </summary>
+            <param name="endpoint">The endpoint.</param>
+            <param name="time">The time.</param>
+            <param name="msgs">The messages.</param>
+        </member>
+        <member name="M:Rhino.ServiceBus.Impl.DefaultServiceBus.DelaySend(System.DateTime,System.Object[])">
+            <summary>
+            Send the message with a built in delay in its processing
+            </summary>
+            <param name="time">The time.</param>
+            <param name="msgs">The messages.</param>
+        </member>
+        <member name="M:Rhino.ServiceBus.Impl.DefaultServiceBus.GetAllNonOccasionalConsumers(System.Collections.Generic.IEnumerable{System.Type},System.Collections.Generic.IEnumerable{System.Type},System.Collections.Generic.IEnumerable{System.Object})">
+            <summary>
+            Here we don't use ResolveAll from Windsor because we want to get an error
+            if a component exists which isn't valid
+            </summary>
+        </member>
+        <member name="P:Rhino.ServiceBus.Internal.ITransport.CurrentMessageInformation">
+            <summary>
+            The information for the message currently being received and handled by the transport.
+            </summary>
+        </member>
+        <member name="T:Rhino.ServiceBus.ServiceBusExtensions">
+            <summary>
+            Provides some convenience extension methods to IServiceBus
+            </summary>
+        </member>
+        <member name="M:Rhino.ServiceBus.ServiceBusExtensions.HandleCurrentMessageLater(Rhino.ServiceBus.IServiceBus)">
+            <summary>
+            Handles the current message later.
+            </summary>
+        </member>
+        <member name="M:Rhino.ServiceBus.ServiceBusExtensions.SendToSelf(Rhino.ServiceBus.IServiceBus,System.Object[])">
+            <summary>
+            Sends the message directly to this bus endpoint
+            </summary>
+        </member>
+        <member name="M:Rhino.ServiceBus.ServiceBusExtensions.DelaySendToSelf(Rhino.ServiceBus.IServiceBus,System.DateTime,System.Object[])">
+            <summary>
+            Send the message with a built in delay in its processing to this bus endpoint
+            </summary>
+        </member>
+        <member name="T:Rhino.ServiceBus.Internal.IOccasionalMessageConsumer">
+            <summary>
+            Used to make it easy to work with IOC containers
+            </summary>
+        </member>
+        <member name="T:Rhino.ServiceBus.Messages.AdministrativeMessage">
+            <summary>
+            Base class for all messages that are part of the control
+            channel of the bus
+            </summary>
+        </member>
+        <member name="T:Rhino.ServiceBus.Msmq.FlatQueueStrategy">
+            <summary>
+            Handles message moving to sibling queues.
+            Suitable for MSMQ 3.0
+            </summary>
+            <remarks>
+            <para>
+            This strategy presumes additional queues than those defined by the endpoint.
+            </para>
+            <list type="bullet">
+            <listheader>So your queue structure would be:</listheader>
+            <item>[my_queue_name]</item>
+            <item>[my_queue_name]<c>#subscriptions</c></item>
+            <item>[my_queue_name]<c>#errors</c></item>
+            <item>[my_queue_name]<c>#discarded</c></item>
+            <item>[my_queue_name]<c>#timeout</c></item>
+            </list>
+            </remarks>
+        </member>
+        <member name="T:Rhino.ServiceBus.Msmq.IQueueStrategy">
+            <summary>
+            Encapsulates handling of messages based on queue layout
+            </summary>
+        </member>
+        <member name="M:Rhino.ServiceBus.Msmq.IQueueStrategy.CreateSubscriptionQueueUri(System.Uri)">
+            <summary>
+            Creates the subscription queue URI.
+            </summary>
+            <param name="subscriptionQueue">The subscription queue.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Rhino.ServiceBus.Msmq.IQueueStrategy.GetTimeoutMessages(Rhino.ServiceBus.Msmq.OpenedQueue)">
+            <summary>
+            Gets a listing of all timeout messages.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Rhino.ServiceBus.Msmq.IQueueStrategy.MoveTimeoutToMainQueue(Rhino.ServiceBus.Msmq.OpenedQueue,System.String)">
+            <summary>
+            Moves the message from the timeout queue to the main queue.
+            </summary>
+            <param name="queue">The queue.</param>
+            <param name="messageId">The message id.</param>
+        </member>
+        <member name="M:Rhino.ServiceBus.Msmq.FlatQueueStrategy.#ctor(Rhino.ServiceBus.Internal.IEndpointRouter,System.Uri)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Rhino.ServiceBus.Msmq.FlatQueueStrategy"/> class.
+            </summary>
+        </member>
+        <member name="M:Rhino.ServiceBus.Msmq.FlatQueueStrategy.CreateSubscriptionQueueUri(System.Uri)">
+            <summary>
+            Creates the subscription queue URI.
+            </summary>
+            <param name="subscriptionQueue">The subscription queue.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Rhino.ServiceBus.Msmq.FlatQueueStrategy.GetTimeoutMessages(Rhino.ServiceBus.Msmq.OpenedQueue)">
+            <summary>
+            Gets a listing of all timeout messages.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Rhino.ServiceBus.Msmq.FlatQueueStrategy.MoveTimeoutToMainQueue(Rhino.ServiceBus.Msmq.OpenedQueue,System.String)">
+            <summary>
+            Moves the message from the timeout queue to the main queue.
+            </summary>
+            <param name="queue">The queue.</param>
+            <param name="messageId">The message id.</param>
+        </member>
+        <member name="M:Rhino.ServiceBus.Msmq.FlatQueueStrategy.GetErrorsQueuePath">
+            <summary>
+            Gets the errors queue path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Rhino.ServiceBus.Msmq.FlatQueueStrategy.GetDiscardedQueuePath">
+            <summary>
+            Gets the discarded queue path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Rhino.ServiceBus.Msmq.FlatQueueStrategy.GetTimeoutQueuePath">
+            <summary>
+            Gets the timeout queue path.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Rhino.ServiceBus.Msmq.MsmqExtensions.GetCount(System.Messaging.MessageQueue)">
+            <summary>
+            Gets the count.
+            http://blog.codebeside.org/archive/2008/08/27/counting-the-number-of-messages-in-a-message-queue-in.aspx
+            </summary>
+            <param name="self">The self.</param>
+            <returns></returns>
+        </member>
+        <member name="T:Rhino.ServiceBus.Msmq.SubQueueStrategy">
+            <summary>
+            Default subqueue stragey enabled in MSMQ 4.0
+            </summary>
+        </member>
+        <member name="M:Rhino.ServiceBus.Msmq.SubQueueStrategy.CreateSubscriptionQueueUri(System.Uri)">
+            <summary>
+            Creates the subscription queue URI.
+            </summary>
+            <param name="subscriptionQueue">The subscription queue.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Rhino.ServiceBus.Msmq.SubQueueStrategy.GetTimeoutMessages(Rhino.ServiceBus.Msmq.OpenedQueue)">
+            <summary>
+            Gets a listing of all timeout messages.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Rhino.ServiceBus.Msmq.SubQueueStrategy.MoveTimeoutToMainQueue(Rhino.ServiceBus.Msmq.OpenedQueue,System.String)">
+            <summary>
+            Moves the message from the timeout queue to the main queue.
+            </summary>
+            <param name="queue">The queue.</param>
+            <param name="messageId">The message id.</param>
+        </member>
+        <member name="M:Rhino.ServiceBus.Config.MsmqTransportConfigurationAware.DetectQueueStrategy">
+            <summary>
+            Detects the valid queue strategy automatically.
+            </summary>
+        </member>
+        <member name="T:Rhino.ServiceBus.ISagaFinder`2">
+            <summary>
+            Defines a way to find sagas using messages that don't implement <see cref="T:Rhino.ServiceBus.Sagas.ISagaMessage"/>.  
+            This is useful for when one saga orchestrates messages returned by other consumers or sagas.
+            </summary>
+            <typeparam name="SagaT">The type of the saga to find</typeparam>
+            <typeparam name="MessageT">The message to use </typeparam>
+        </member>
+        <member name="T:Rhino.ServiceBus.FinderOf`1">
+            <summary>
+            Human readable way of defining a saga finder.
+            </summary>
+            <example>
+            public class MySagaFinder : FinderOf&lt;SagaT&gt;.By&lt;MessageT&gt;
+            {
+            	public MySaga FindBy(SpecialMessage message)
+            	{
+            		//find sagas using the message here.  Usually you will use an ISagaPersister to fetch sagas.
+            	}
+            }
+            </example>
+            <typeparam name="SagaT">The type of the saga to find</typeparam>
+        </member>
+        <member name="T:Rhino.ServiceBus.FinderOf`1.By`1">
+            <summary>
+            Human readable way of defining a saga finder.
+            </summary>
+            <example>
+            public class MySagaFinder : FinderOf&lt;SagaT&gt;.By&lt;MessageT&gt;
+            {
+            	public MySaga FindBy(SpecialMessage message)
+            	{
+            		//find sagas using the message here.  Usually you will use an ISagaPersister to fetch sagas.
+            	}
+            }
+            </example>
+            <typeparam name="MessageT">The type of the message used to find sagas.</typeparam>
+        </member>
+        <member name="T:Rhino.ServiceBus.Msmq.TransactionalOptions">
+            <summary>
+            This is required because Windsor doesn't allow to pass nulls as valid arguments
+            to ctors
+            </summary>
+        </member>
+    </members>
+</doc>

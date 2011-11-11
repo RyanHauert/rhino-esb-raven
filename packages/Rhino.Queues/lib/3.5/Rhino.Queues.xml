@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Rhino.Queues</name>
+    </assembly>
+    <members>
+        <member name="T:Rhino.Queues.IQueueManager">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:Rhino.Queues.Utils.GuidCombGenerator">
+            <summary>
+            Generates <see cref="T:System.Guid"/> values 
+            using a strategy suggested Jimmy Nilsson's 
+            <a href="http://www.informit.com/articles/article.asp?p=25862">article</a>
+            on <a href="http://www.informit.com">informit.com</a>. 
+            </summary>
+            <remarks>
+            <p>
+            The <c>comb</c> algorithm is designed to make the use of GUIDs as Primary Keys, Foreign Keys, 
+            and Indexes nearly as efficient as ints.
+            </p>
+            <p>
+            This code was modifed based on Donald Mull's contributor to the
+            NHibernate source.
+            </p>
+            </remarks>
+        </member>
+        <member name="M:Rhino.Queues.Utils.GuidCombGenerator.Generate">
+            <summary>
+            Generate a new <see cref="T:System.Guid"/> using the comb algorithm.
+            </summary>
+        </member>
+        <member name="T:Rhino.Queues.Utils.MonoHttpUtility">
+            <summary>
+            We have to use this stupid trick because HttpUtility.UrlEncode / Decode
+            uses HttpContext.Current under the covers, which doesn't work in IIS7 
+            Application_Start
+            </summary>
+        </member>
+    </members>
+</doc>
