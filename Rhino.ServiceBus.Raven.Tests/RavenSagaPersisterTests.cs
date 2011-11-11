@@ -100,7 +100,8 @@ namespace Rhino.ServiceBus.Tests
                 bus.Send(bus.Endpoint, new NewOrderMessage());
                 wait.WaitOne(TimeSpan.FromSeconds(30), false);
 
-                var persister = container.Resolve<ISagaPersister<OrderProcessor>>();
+                var storeProvider = new TestDocumentStoreProvider(container.Resolve<IDocumentStore>());
+                var persister = new RavenSagaPersister<OrderProcessor>(storeProvider, container.Resolve<IServiceLocator>(), container.Resolve<IReflection>());
                 OrderProcessor processor = null;
                 while (processor == null)
                 {
@@ -112,7 +113,7 @@ namespace Rhino.ServiceBus.Tests
             }
         }
 
-        [Fact(Skip = "Can't resolve persister directly without message processing")]
+        [Fact]
         public void When_creating_saga_entity_will_set_saga_id()
         {
             using (var bus = container.Resolve<IStartableServiceBus>())
@@ -122,7 +123,8 @@ namespace Rhino.ServiceBus.Tests
                 bus.Send(bus.Endpoint, new NewOrderMessage2());
                 wait.WaitOne(TimeSpan.FromSeconds(30), false);
 
-                var persister = container.Resolve<ISagaPersister<OrderProcessor>>();
+                var storeProvider = new TestDocumentStoreProvider(container.Resolve<IDocumentStore>());
+                var persister = new RavenSagaPersister<OrderProcessor>(storeProvider, container.Resolve<IServiceLocator>(), container.Resolve<IReflection>());
                 OrderProcessor processor = null;
                 while (processor == null)
                 {
@@ -166,7 +168,8 @@ namespace Rhino.ServiceBus.Tests
                 wait.WaitOne(TimeSpan.FromSeconds(30), false);
                 wait.Reset();
 
-                var persister = container.Resolve<ISagaPersister<OrderProcessor>>();
+                var storeProvider = new TestDocumentStoreProvider(container.Resolve<IDocumentStore>());
+                var persister = new RavenSagaPersister<OrderProcessor>(storeProvider, container.Resolve<IServiceLocator>(), container.Resolve<IReflection>());
                 OrderProcessor processor = null;
                 while (processor == null)
                 {
