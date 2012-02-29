@@ -1,7 +1,6 @@
 <Configuration>
   <CodeStyleSettings>
-    <ExternalPath IsNull="False">
-    </ExternalPath>
+    <ExternalPath IsNull="False" />
     <Sharing>SOLUTION</Sharing>
     <CSS>
       <FormatSettings />
@@ -575,7 +574,7 @@ II.2.12 <HandlesEvent />
     <Naming2>
       <EventHandlerPatternLong>$object$_On$event$</EventHandlerPatternLong>
       <EventHandlerPatternShort>$event$Handler</EventHandlerPatternShort>
-      <PredefinedRule Inspect="True" Prefix="my" Suffix="" Style="AaBb" ElementKind="PrivateInstanceFields" />
+      <PredefinedRule Inspect="True" Prefix="" Suffix="" Style="aaBb" ElementKind="PrivateInstanceFields" />
       <PredefinedRule Inspect="True" Prefix="" Suffix="" Style="AaBb" ElementKind="TypesAndNamespaces" />
       <PredefinedRule Inspect="True" Prefix="I" Suffix="" Style="AaBb" ElementKind="Interfaces" />
       <PredefinedRule Inspect="True" Prefix="T" Suffix="" Style="AaBb" ElementKind="TypeParameters" />

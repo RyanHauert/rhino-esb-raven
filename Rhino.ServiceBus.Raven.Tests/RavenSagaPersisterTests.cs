@@ -86,7 +86,7 @@ namespace Rhino.ServiceBus.Tests
                 bus.Send(bus.Endpoint, new NewOrderMessage { CorrelationId = guid });
                 wait.WaitOne(TimeSpan.FromSeconds(30), false);
 
-                Assert.Equal(2, OrderProcessor.LastState.Count);
+                Assert.Equal(2, OrderProcessor.LastState.Messages.Count);
             }
         }
 
@@ -101,7 +101,7 @@ namespace Rhino.ServiceBus.Tests
                 wait.WaitOne(TimeSpan.FromSeconds(30), false);
 
                 var storeProvider = new TestDocumentStoreProvider(container.Resolve<IDocumentStore>());
-                var persister = new RavenSagaPersister<OrderProcessor>(storeProvider, container.Resolve<IServiceLocator>(), container.Resolve<IReflection>());
+                var persister = new RavenSagaPersister<OrderProcessor>(storeProvider, container.Resolve<IServiceLocator>());
                 OrderProcessor processor = null;
                 while (processor == null)
                 {
@@ -109,7 +109,7 @@ namespace Rhino.ServiceBus.Tests
                     processor = persister.Get(sagaId);
                 }
 
-                Assert.Equal(1, processor.State.Count);
+                Assert.Equal(1, processor.State.Messages.Count);
             }
         }
 
@@ -124,7 +124,7 @@ namespace Rhino.ServiceBus.Tests
                 wait.WaitOne(TimeSpan.FromSeconds(30), false);
 
                 var storeProvider = new TestDocumentStoreProvider(container.Resolve<IDocumentStore>());
-                var persister = new RavenSagaPersister<OrderProcessor>(storeProvider, container.Resolve<IServiceLocator>(), container.Resolve<IReflection>());
+                var persister = new RavenSagaPersister<OrderProcessor>(storeProvider, container.Resolve<IServiceLocator>());
                 OrderProcessor processor = null;
                 while (processor == null)
                 {
@@ -147,13 +147,13 @@ namespace Rhino.ServiceBus.Tests
                 wait.WaitOne(TimeSpan.FromSeconds(30), false);
                 wait.Reset();
 
-                Assert.Equal(1, OrderProcessor.LastState.Count);
+                Assert.Equal(1, OrderProcessor.LastState.Messages.Count);
 
                 bus.Send(bus.Endpoint, new AddLineItemMessage { CorrelationId = sagaId });
 
                 wait.WaitOne(TimeSpan.FromSeconds(30), false);
 
-                Assert.Equal(2, OrderProcessor.LastState.Count);
+                Assert.Equal(2, OrderProcessor.LastState.Messages.Count);
             }
         }
 
@@ -169,7 +169,7 @@ namespace Rhino.ServiceBus.Tests
                 wait.Reset();
 
                 var storeProvider = new TestDocumentStoreProvider(container.Resolve<IDocumentStore>());
-                var persister = new RavenSagaPersister<OrderProcessor>(storeProvider, container.Resolve<IServiceLocator>(), container.Resolve<IReflection>());
+                var persister = new RavenSagaPersister<OrderProcessor>(storeProvider, container.Resolve<IServiceLocator>());
                 OrderProcessor processor = null;
                 while (processor == null)
                 {
@@ -199,7 +199,7 @@ namespace Rhino.ServiceBus.Tests
                 bus.Start();
 
                 var storeProvider = new TestDocumentStoreProvider(container.Resolve<IDocumentStore>());
-                var persister = new RavenSagaPersister<OrderProcessor>(storeProvider, container.Resolve<IServiceLocator>(), container.Resolve<IReflection>());
+                var persister = new RavenSagaPersister<OrderProcessor>(storeProvider, container.Resolve<IServiceLocator>());
                 Assert.DoesNotThrow(() =>
                 {
                     persister.Complete(new OrderProcessor());
@@ -236,23 +236,23 @@ namespace Rhino.ServiceBus.Tests
         #region Nested type: OrderProcessor
 
         public class OrderProcessor :
-                ISaga<List<object>>,
+                ISaga<OrderProcessorState>,
                 InitiatedBy<NewOrderMessage2>,
                 InitiatedBy<NewOrderMessage>,
                 Orchestrates<AddLineItemMessage>,
                 Orchestrates<SubmitOrderMessage>
         {
-            public static List<object> LastState;
+            public static OrderProcessorState LastState;
 
             public OrderProcessor()
             {
-                State = new List<object>();
+                State = new OrderProcessorState();
             }
             #region InitiatedBy<NewOrderMessage> Members
 
             public void Consume(NewOrderMessage pong)
             {
-                State.Add(pong);
+                State.Messages.Add(pong);
                 sagaId = Id;
                 LastState = State;
                 wait.Set();
@@ -267,7 +267,7 @@ namespace Rhino.ServiceBus.Tests
 
             public void Consume(AddLineItemMessage pong)
             {
-                State.Add(pong);
+                State.Messages.Add(pong);
                 sagaId = Id;
                 LastState = State;
                 wait.Set();
@@ -282,11 +282,7 @@ namespace Rhino.ServiceBus.Tests
                 wait.Set();
             }
 
-            public List<object> State
-            {
-                get;
-                set;
-            }
+            public OrderProcessorState State { get; set; }
 
             public void Consume(NewOrderMessage2 message)
             {
@@ -297,6 +293,11 @@ namespace Rhino.ServiceBus.Tests
         }
 
         #endregion
+
+        public class OrderProcessorState
+        {
+            public List<object> Messages = new List<object>();
+        }
 
         #region Nested type: SubmitOrderMessage
 
