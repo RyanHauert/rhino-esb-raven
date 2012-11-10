@@ -1,21 +1,21 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using Raven.Client;
 using Raven.Client.Embedded;
 using Rhino.ServiceBus.Impl;
 using Rhino.ServiceBus.Internal;
 using Rhino.ServiceBus.MessageModules;
-using Rhino.ServiceBus.Raven;
 using Rhino.ServiceBus.Sagas;
 using Xunit;
-using Component = Castle.MicroKernel.Registration.Component;
 
-namespace Rhino.ServiceBus.Tests
+namespace Rhino.ServiceBus.Raven.Tests
 {
     public class SagaTests
     {
+        private static readonly TimeSpan WaitTimeout = TimeSpan.FromSeconds(5);
         private static Guid sagaId;
         private static ManualResetEvent wait;
         private readonly IWindsorContainer container;
@@ -54,7 +54,7 @@ namespace Rhino.ServiceBus.Tests
         }
 
         [Fact]
-        public void when_sending_non_initiating_message_saga_will_not_be_invoked()
+        public void When_sending_non_initiating_message_saga_will_not_be_invoked()
         {
             using (var bus = container.Resolve<IStartableServiceBus>())
             {
@@ -63,14 +63,14 @@ namespace Rhino.ServiceBus.Tests
 
                 transport.MessageProcessingCompleted += (i, e) => wait.Set();
                 bus.Send(bus.Endpoint, new AddLineItemMessage());
-                wait.WaitOne(TimeSpan.FromSeconds(30), false);
+                wait.WaitOne(WaitTimeout);
 
                 Assert.Null(OrderProcessor.LastState);
             }
         }
 
         [Fact]
-        public void When_saga_with_same_correlation_id_exists_and_get_initiating_message_will_usage_same_saga()
+        public void When_saga_with_same_correlation_id_exists_get_initiating_message_will_use_same_saga()
         {
             using (var bus = container.Resolve<IStartableServiceBus>())
             {
@@ -79,12 +79,12 @@ namespace Rhino.ServiceBus.Tests
                 var guid = Guid.NewGuid();
 
                 bus.Send(bus.Endpoint, new NewOrderMessage { CorrelationId = guid });
-                wait.WaitOne(TimeSpan.FromSeconds(30), false);
+                wait.WaitOne(WaitTimeout);
 
                 wait.Reset();
 
                 bus.Send(bus.Endpoint, new NewOrderMessage { CorrelationId = guid });
-                wait.WaitOne(TimeSpan.FromSeconds(30), false);
+                wait.WaitOne(WaitTimeout);
 
                 Assert.Equal(2, OrderProcessor.LastState.Messages.Count);
             }
@@ -98,7 +98,7 @@ namespace Rhino.ServiceBus.Tests
                 bus.Start();
 
                 bus.Send(bus.Endpoint, new NewOrderMessage());
-                wait.WaitOne(TimeSpan.FromSeconds(30), false);
+                wait.WaitOne(WaitTimeout, false);
 
                 var storeProvider = new TestDocumentStoreProvider(container.Resolve<IDocumentStore>());
                 var persister = new RavenSagaPersister<OrderProcessor>(storeProvider, container.Resolve<IServiceLocator>());
@@ -121,7 +121,7 @@ namespace Rhino.ServiceBus.Tests
                 bus.Start();
 
                 bus.Send(bus.Endpoint, new NewOrderMessage2());
-                wait.WaitOne(TimeSpan.FromSeconds(30), false);
+                wait.WaitOne(WaitTimeout);
 
                 var storeProvider = new TestDocumentStoreProvider(container.Resolve<IDocumentStore>());
                 var persister = new RavenSagaPersister<OrderProcessor>(storeProvider, container.Resolve<IServiceLocator>());
@@ -144,28 +144,28 @@ namespace Rhino.ServiceBus.Tests
                 bus.Start();
 
                 bus.Send(bus.Endpoint, new NewOrderMessage());
-                wait.WaitOne(TimeSpan.FromSeconds(30), false);
+                wait.WaitOne(WaitTimeout);
                 wait.Reset();
 
                 Assert.Equal(1, OrderProcessor.LastState.Messages.Count);
 
                 bus.Send(bus.Endpoint, new AddLineItemMessage { CorrelationId = sagaId });
 
-                wait.WaitOne(TimeSpan.FromSeconds(30), false);
+                wait.WaitOne(WaitTimeout);
 
                 Assert.Equal(2, OrderProcessor.LastState.Messages.Count);
             }
         }
 
         [Fact]
-        public void Completing_saga_will_get_it_out_of_the_in_memory_persister()
+        public void Completing_saga_will_remove_it_from_store()
         {
             using (var bus = container.Resolve<IStartableServiceBus>())
             {
                 bus.Start();
 
                 bus.Send(bus.Endpoint, new NewOrderMessage());
-                wait.WaitOne(TimeSpan.FromSeconds(30), false);
+                wait.WaitOne(WaitTimeout);
                 wait.Reset();
 
                 var storeProvider = new TestDocumentStoreProvider(container.Resolve<IDocumentStore>());
@@ -179,7 +179,7 @@ namespace Rhino.ServiceBus.Tests
 
                 bus.Send(bus.Endpoint, new SubmitOrderMessage { CorrelationId = sagaId });
 
-                wait.WaitOne(TimeSpan.FromSeconds(30), false);
+                wait.WaitOne(WaitTimeout);
 
                 while (processor != null)
                 {
